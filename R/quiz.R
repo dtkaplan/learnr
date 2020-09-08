@@ -169,7 +169,8 @@ question <- function(text,
     answers = answers,
     button_labels = list(
       submit = quiz_text(submit_button),
-      try_again = quiz_text(try_again_button)
+      try_again = quiz_text(try_again_button),
+      resubmit = quiz_text("Restore to hash")
     ),
     messages = list(
       correct = quiz_text(correct),
@@ -413,7 +414,8 @@ question_module_server_impl <- function(
 
       # update the submit button label
       if (is_correct_info()$correct) {
-        "correct"
+        # DTK change was "correct"
+        "resubmit"
       } else {
         # not correct
         if (isTRUE(question$allow_retry)) {
@@ -517,7 +519,7 @@ question_module_server_impl <- function(
 
   observeEvent(input$action_button, {
 
-    if (button_type() == "try_again") {
+    if (button_type() %in% c("try_again", "resubmit")) { # DTK changed  condition
       # maintain current submission / do not randomize answer order
       # only reset the submitted answers
       # does NOT reset input$answer
@@ -549,7 +551,7 @@ question_module_server_impl <- function(
 
 
 question_button_label <- function(question, label_type = "submit", is_valid = TRUE) {
-  label_type <- match.arg(label_type, c("submit", "try_again", "correct", "incorrect"))
+  label_type <- match.arg(label_type, c("submit", "try_again", "correct", "incorrect", "resubmit"))
   button_label <- question$button_labels[[label_type]]
   is_valid <- isTRUE(is_valid)
 
@@ -564,6 +566,15 @@ question_button_label <- function(question, label_type = "submit", is_valid = TR
       button <- disable_all_tags(button)
     }
     button
+  } else if (label_type == "resubmit") { # DTK added this
+    mutate_tags(
+      actionButton(action_button_id, "Refresh submission", class = "btn-secondary"),
+      paste0("#", action_button_id),
+      function(ele) {
+        ele$attribs$class <- str_remove(ele$attribs$class, "\\s+btn-secondary")
+        ele
+      }
+    )
   } else if (label_type == "try_again") {
     mutate_tags(
       actionButton(action_button_id, button_label, class = warning_class),
