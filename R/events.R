@@ -19,11 +19,12 @@ broadcast_progress_event_to_client <- function(session, event, data) {
     data = data
   ))
 }
-
-broadcast_question_event_to_client <- function(session, label, answer) {
+# DTK
+broadcast_question_event_to_client <- function(session, label, answer, correct) {
   broadcast_progress_event_to_client(session = session,
                                      event = "question_submission",
-                                     data = list(label = label, answer = answer))
+                                     data = list(label = label, answer = answer,
+                                                 correct=correct))
 }
 question_submission_event <- function(session,
                                       label,
@@ -41,13 +42,16 @@ question_submission_event <- function(session,
   # notify client side listeners
   broadcast_question_event_to_client(session = session,
                                      label = label,
-                                     answer = answer)
+                                     answer = answer,
+                                     correct = correct)
 
   # store submission for later replay
   save_question_submission(session = session,
                            label = label,
                            question = question,
-                           answer = answer)
+                           answer = answer,
+                           correct = correct #DTK
+                           )
 }
 
 reset_question_submission_event <- function(session, label, question) {

@@ -170,7 +170,7 @@ question <- function(text,
     button_labels = list(
       submit = quiz_text(submit_button),
       try_again = quiz_text(try_again_button),
-      resubmit = quiz_text("Restore to hash")
+      resubmit = quiz_text("Restore to hash") # DTK added
     ),
     messages = list(
       correct = quiz_text(correct),
@@ -347,8 +347,11 @@ question_module_ui <- function(id) {
     div(
       "data-label" = as.character(id),
       class = "tutorial-question panel-body",
+      #p("Answer here? DTK"),
       uiOutput(ns("answer_container")),
+      #p("message here?"),
       uiOutput(ns("message_container")),
+      #p("button here? DTK"),
       uiOutput(ns("action_button_container")),
       withLearnrMathJax()
     )
@@ -384,7 +387,7 @@ question_module_server_impl <- function(
   # (or reset when try again is hit)
   # (or set when restoring)
   submitted_answer <- reactiveVal(NULL, label = "submitted_answer")
-
+# DTK Add a vector of past submissions, times
   is_correct_info <- reactive(label = "is_correct_info", {
     # question has not been submitted
     if (is.null(submitted_answer())) return(NULL)
@@ -535,6 +538,7 @@ question_module_server_impl <- function(
     }
 
     submitted_answer(input$answer)
+    # DTK update list of past answers here.
 
     # submit question to server
     question_submission_event(
