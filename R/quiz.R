@@ -382,10 +382,6 @@ question_module_server_impl <- function(
   input, output, session,
   question
 ) {
-  # DTK added these lines
-  display_id <- "none"
-  if ("options" %in% names(question) && "id" %in% names(question$options))
-    display_id <- question$options$id
 
   ns <- getDefaultReactiveDomain()$ns
   # set a seed for each user session for question methods to use
@@ -558,8 +554,7 @@ question_module_server_impl <- function(
       question = as.character(question$question),
       answer = as.character(input$answer),
       correct = is_correct_info()$correct, #DTK
-      history = answer_history(), #DTK
-      display_id = display_id # DTK
+      history = answer_history() #DTK
       )
 
   })

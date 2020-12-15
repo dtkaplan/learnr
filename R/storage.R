@@ -1,7 +1,7 @@
 
 
 save_question_submission <- function(session, label, question,
-                                     answer, correct, history, display_id) {
+                                     answer, correct, history) {
   save_object(
     session = session,
     object_id = label,
@@ -11,8 +11,7 @@ save_question_submission <- function(session, label, question,
       answer = answer, # user answer
       time = Sys.time(), #DTK
       history = history, # DTK
-      correct = correct, # DTK
-      display_id = display_id
+      correct = correct # DTK
     ))
   )
 }
