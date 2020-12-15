@@ -320,9 +320,13 @@ retrieve_all_question_submissions <- function(session) {
 retrieve_question_submission_answer <- function(session, question_label) {
   question_label <- as.character(question_label)
 
+  tmp <- retrieve_all_question_submissions(session)
+  save(tmp, file = "~/Downloads/retrieved.Rda")
+
   for (submission in retrieve_all_question_submissions(session)) {
     if (identical(as.character(submission$id), question_label)) {
-      return(submission$data$answer)
+      return(submission) #DTK
+      # return(submission$data$answer)
     }
   }
   return(NULL)
@@ -378,6 +382,10 @@ question_module_server_impl <- function(
   input, output, session,
   question
 ) {
+  # DTK added these lines
+  display_id <- "none"
+  if ("options" %in% names(question) && "id" %in% names(question$options))
+    display_id <- question$options$id
 
   ns <- getDefaultReactiveDomain()$ns
   # set a seed for each user session for question methods to use
@@ -388,6 +396,8 @@ question_module_server_impl <- function(
   # (or set when restoring)
   submitted_answer <- reactiveVal(NULL, label = "submitted_answer")
 # DTK Add a vector of past submissions, times
+  answer_history <- reactiveVal(list(), label="DTK history")
+
   is_correct_info <- reactive(label = "is_correct_info", {
     # question has not been submitted
     if (is.null(submitted_answer())) return(NULL)
@@ -445,7 +455,8 @@ question_module_server_impl <- function(
     if (question$random_answer_order) {
       question$answers <<- shuffle(question$answers)
     }
-    submitted_answer(restoreValue)
+    submitted_answer(restoreValue$data$answer) # DTK added $data$answer
+    answer_history(restoreValue$data$history) # DTK
   }
 
   # restore past submission
@@ -539,15 +550,17 @@ question_module_server_impl <- function(
 
     submitted_answer(input$answer)
     # DTK update list of past answers here.
-
+    answer_history(c(answer_history(), list(input$answer, Sys.time())))
     # submit question to server
     question_submission_event(
       session = session,
       label = as.character(question$label),
       question = as.character(question$question),
       answer = as.character(input$answer),
-      correct = is_correct_info()$correct
-    )
+      correct = is_correct_info()$correct, #DTK
+      history = answer_history(), #DTK
+      display_id = display_id # DTK
+      )
 
   })
 }

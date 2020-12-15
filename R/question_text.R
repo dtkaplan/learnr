@@ -58,11 +58,12 @@ question_text <- function(
 
 
 question_ui_initialize.learnr_text <- function(question, value, ...) {
-  textInput(
+  textAreaInput( #DTK changed from textInput()
     question$ids$answer,
     label = question$question,
     placeholder = question$options$placeholder,
-    value = value
+    value = value,
+    rows = question$options$nrows %||% 1 # DTK added this, too
   )
 }
 

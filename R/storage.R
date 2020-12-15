@@ -1,6 +1,7 @@
 
 
-save_question_submission <- function(session, label, question, answer, correct) {
+save_question_submission <- function(session, label, question,
+                                     answer, correct, history, display_id) {
   save_object(
     session = session,
     object_id = label,
@@ -9,8 +10,9 @@ save_question_submission <- function(session, label, question, answer, correct) 
       question = question,
       answer = answer, # user answer
       time = Sys.time(), #DTK
-      something = "How now brown cow",
-      correct = correct
+      history = history, # DTK
+      correct = correct, # DTK
+      display_id = display_id
     ))
   )
 }
@@ -381,7 +383,6 @@ filesystem_storage <- function(dir, compress = TRUE) {
 
     get_objects = function(tutorial_id, tutorial_version, user_id) {
       objects_path <- storage_path(tutorial_id, tutorial_version, user_id)
-      cat("Objects path is", objects_path, "\n") # DTK
       objects <- list()
       for (object_path in list.files(objects_path, pattern = utils::glob2rx("*.rds"))) {
         object <- readRDS(file.path(objects_path, object_path))

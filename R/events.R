@@ -20,37 +20,50 @@ broadcast_progress_event_to_client <- function(session, event, data) {
   ))
 }
 # DTK
-broadcast_question_event_to_client <- function(session, label, answer, correct) {
+broadcast_question_event_to_client <- function(session, label, answer, correct, history, display_id) {
   broadcast_progress_event_to_client(session = session,
                                      event = "question_submission",
-                                     data = list(label = label, answer = answer,
-                                                 correct=correct))
+                                     data = list(label = label,
+                                                 answer = answer,
+                                                 correct = correct, # DTK
+                                                 history = history, # DTK
+                                                 display_id = display_id)) # DTK))
 }
 question_submission_event <- function(session,
                                       label,
                                       question,
                                       answer,
-                                      correct) {
+                                      correct, #DTK
+                                      history, # DTK
+                                      display_id = display_id # DTK
+                                      ) {
   # notify server-side listeners
   record_event(session = session,
                event = "question_submission",
                data = list(label = label,
                            question = question,
-                           answer = answer,
-                           correct = correct))
+                           answer = answer, ,
+                           correct = correct, #DTK
+                           history = history, # DTK
+                           display_id = display_id))
 
   # notify client side listeners
   broadcast_question_event_to_client(session = session,
                                      label = label,
                                      answer = answer,
-                                     correct = correct)
+                                     correct = correct,
+                                     history = history,
+                                     display_id = display_id
+  )
 
   # store submission for later replay
   save_question_submission(session = session,
                            label = label,
                            question = question,
                            answer = answer,
-                           correct = correct #DTK
+                           correct = correct, # DTK
+                           history = history, # DTK
+                           display_id = display_id
                            )
 }
 
