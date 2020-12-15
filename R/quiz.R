@@ -320,8 +320,8 @@ retrieve_all_question_submissions <- function(session) {
 retrieve_question_submission_answer <- function(session, question_label) {
   question_label <- as.character(question_label)
 
-  tmp <- retrieve_all_question_submissions(session)
-  save(tmp, file = "~/Downloads/retrieved.Rda")
+  # tmp <- retrieve_all_question_submissions(session) # DTK
+  # save(tmp, file = "~/Downloads/retrieved.Rda")
 
   for (submission in retrieve_all_question_submissions(session)) {
     if (identical(as.character(submission$id), question_label)) {
