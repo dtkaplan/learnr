@@ -169,8 +169,7 @@ question <- function(text,
     answers = answers,
     button_labels = list(
       submit = quiz_text(submit_button),
-      try_again = quiz_text(try_again_button),
-      resubmit = quiz_text("Restore to hash") # DTK added
+      try_again = quiz_text(try_again_button)
     ),
     messages = list(
       correct = quiz_text(correct),
@@ -393,6 +392,14 @@ question_module_server_impl <- function(
   submitted_answer <- reactiveVal(NULL, label = "submitted_answer")
 # DTK Add a vector of past submissions, times
   answer_history <- reactiveVal(list(), label="DTK history")
+  # DTK for marking a submission as an essay
+  tmp <- if (is.null(question$options$essay)) {
+    FALSE
+  } else {
+    question$options$essay
+  }
+  is_essay <- reactiveVal(tmp)
+  # end of DTK addition
 
   is_correct_info <- reactive(label = "is_correct_info", {
     # question has not been submitted
@@ -423,8 +430,7 @@ question_module_server_impl <- function(
 
       # update the submit button label
       if (is_correct_info()$correct) {
-        # DTK change was "correct"
-        "resubmit"
+        "correct"
       } else {
         # not correct
         if (isTRUE(question$allow_retry)) {
@@ -546,7 +552,11 @@ question_module_server_impl <- function(
 
     submitted_answer(input$answer)
     # DTK update list of past answers here.
-    answer_history(c(answer_history(), list(input$answer, Sys.time())))
+    if (is_essay()) {
+      answer_history(c(answer_history(), list("draft", as.character(Sys.time()))))
+    } else {
+      answer_history(c(answer_history(), list(input$answer, as.character(Sys.time()))))
+    }
     # submit question to server
     question_submission_event(
       session = session,
@@ -554,7 +564,8 @@ question_module_server_impl <- function(
       question = as.character(question$question),
       answer = as.character(input$answer),
       correct = is_correct_info()$correct, #DTK
-      history = answer_history() #DTK
+      history = answer_history(), # DTK
+      is_essay = is_essay() #DTK
       )
 
   })
@@ -578,15 +589,6 @@ question_button_label <- function(question, label_type = "submit", is_valid = TR
       button <- disable_all_tags(button)
     }
     button
-  } else if (label_type == "resubmit") { # DTK added this
-    mutate_tags(
-      actionButton(action_button_id, "Refresh submission", class = "btn-secondary"),
-      paste0("#", action_button_id),
-      function(ele) {
-        ele$attribs$class <- str_remove(ele$attribs$class, "\\s+btn-secondary")
-        ele
-      }
-    )
   } else if (label_type == "try_again") {
     mutate_tags(
       actionButton(action_button_id, button_label, class = warning_class),
@@ -654,6 +656,9 @@ question_messages <- function(question, messages, is_correct, is_done) {
     )
   }
 
+  cat("Is question$messages$message NULL?",
+      is.null(question$messages$message),
+      "\n")
 
   if (is.null(question$messages$message)) {
     always_message_alert <- NULL

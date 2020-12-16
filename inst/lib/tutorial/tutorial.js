@@ -931,8 +931,9 @@ Tutorial.prototype.$initializeExerciseEditors = function() {
     }
 
     // create submit answer button if checks are enabled
+    // DTK changed from "Submit answer" to "Check answer"
     if (thiz.$exerciseCheckCode(label) !== null)
-      add_submit_button("fa-check-square-o", "btn-primary", "Submit Answer", true);
+      add_submit_button("fa-check-square-o", "btn-primary", "Check Answer", true);
 
     // create run button
     var run_button = add_submit_button("fa-play", "btn-success", "Run Code", false);
