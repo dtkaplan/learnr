@@ -656,10 +656,6 @@ question_messages <- function(question, messages, is_correct, is_done) {
     )
   }
 
-  cat("Is question$messages$message NULL?",
-      is.null(question$messages$message),
-      "\n")
-
   if (is.null(question$messages$message)) {
     always_message_alert <- NULL
   } else {

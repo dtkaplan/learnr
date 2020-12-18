@@ -462,16 +462,20 @@ error_result <- function(error_message, timeout_exceeded=NA) {
   )
 }
 invisible_feedback <- function() {
-  feedback_as_html(
-    feedback_validated(
-      list(
-        message = "Last value being used to check answer is invisible. See `?invisible` for more information",
-        type = "warning",
-        correct = FALSE,
-        location = "append"
-      )
-    )
-  )
+  # feedback_as_html(
+  #   feedback_validated(
+  #     list(
+  #       message = "Last value being used to check answer is invisible. See `?invisible` for more information",
+  #       type = "warning",
+  #       correct = FALSE,
+  #       location = "append"
+  #     )
+  #   )
+  # )
+
+  # A more recent version of learnr gets rid of this feedback
+  # for invisible.
+  NULL # DTK commented out above and replaced with NULL
 }
 
 timeout_error_message <- function() {
